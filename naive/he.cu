@@ -8,7 +8,7 @@ __global__ void printHello()
 int main()
 {
     dim3 grid_dim = {1, 1, 1};             // 设置线程网格
-    dim3 block_dim = {4, 1, 1};            // 设置对应线程块大小
+    dim3 block_dim = {412, 1, 1};            // 设置对应线程块大小
     printHello<<<grid_dim, block_dim>>>(); // 执行kernel
     // int num_blocks = 1;                    // 如果仅仅使用一维线程网格，可以直接指定线程块数目
     // int BLOCK_DIM = 4;                     // 如果仅仅使用一维线程网格，可以直接指定每个线程块的线程数目
