@@ -79,6 +79,7 @@ __global__ void matrixKernel2nd(float *dA, float *dB, float *dC, int M, int K, i
         {
             tmp += SA[threadIdx.x][s] * SB[s][threadIdx.y];
         }
+
         __syncthreads();
     }
     if (row < M && col < N)
@@ -116,7 +117,9 @@ void hostMatrix(float *hostA, float *hostB, float *hostC, int M, int K, int N)
     cudaEventRecord(start, 0);
     for (int i = 0; i < repeat; i++)
     {
+        // printf("this is in matrixKernel1st!");
         // matrixKernel1st<<<grid_dim, block_dim>>>(dA, dB, dC, M, K, N);
+        printf("this is run in matrixKernel2nd!");
         matrixKernel2nd<32><<<grid_dim, block_dim>>>(dA, dB, dC, M, K, N);
     }
 

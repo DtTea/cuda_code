@@ -242,8 +242,9 @@ void hostMatrix(float *hostA, float *hostB, float *hostC, int M, int K, int N)
     cudaEventRecord(start, 0);
     for (int i = 0; i < repeat; i++)
     {
-        // matrixKernel1st<BM, BN, BK, TM, TN><<<grid_dim, block_dim>>>(dA, dB, dC, M, K, N);
-        matrixKernel2nd<BM, BN, BK, TM, TN><<<grid_dim, block_dim>>>(dA, dB, dC, M, K, N);
+        printf("this is running in v3 matrixKernel1st!");
+        matrixKernel1st<BM, BN, BK, TM, TN><<<grid_dim, block_dim>>>(dA, dB, dC, M, K, N);
+        //matrixKernel2nd<BM, BN, BK, TM, TN><<<grid_dim, block_dim>>>(dA, dB, dC, M, K, N);
         // matrixOrigin<BM, BN, BK, TM, TN><<<grid_dim, block_dim>>>(dA, dB, dC, M, K, N);
     }
 
