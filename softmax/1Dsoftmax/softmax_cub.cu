@@ -8,13 +8,15 @@
 #define BLOCK_DIM 10
 #define max_function(a,b) ((a)>(b)?(a):(b))
 
+// 获取当前墙钟时间
 double get_walltime() {
   struct timeval tp;
   gettimeofday(&tp, NULL);
   return (double) (tp.tv_sec + tp.tv_usec*1e-6); 
 }
-__global__
-void max_soft(float *input, int size, float *result){
+
+// 在一个CUDA block内计算输入数组的最大值
+__global__ void max_soft(float *input, int size, float *result){
     typedef cub::BlockReduce<float, BLOCK_DIM> BlockReduce;
     __shared__ typename BlockReduce::TempStorage temp_storage;
     int tid = threadIdx.x + blockIdx.x*blockDim.x;
@@ -31,6 +33,8 @@ void max_soft(float *input, int size, float *result){
     }
     
 }
+
+// 在一个CUDA block内计算输入数组的和
 __global__ void gridmax(float *result, int num_blocks){//result[0] = max
     for(int stride = num_blocks/2; stride > 0; stride = stride/2){
         if (threadIdx.x < stride) {//threadIdx.x + stride < num_blocks = len(result)
@@ -40,8 +44,9 @@ __global__ void gridmax(float *result, int num_blocks){//result[0] = max
     }
 }
 
-__global__
-void sum_soft(float *input, int size, float *result){
+
+// 在一个CUDA block内计算输入数组的和
+__global__ void sum_soft(float *input, int size, float *result){
     typedef cub::BlockReduce<float, BLOCK_DIM> BlockReduce;
     __shared__ typename BlockReduce::TempStorage temp_storage;
     int tid = threadIdx.x + blockIdx.x*blockDim.x;
@@ -58,6 +63,8 @@ void sum_soft(float *input, int size, float *result){
         }
     }
 }
+
+// 在一个CUDA block内计算输入数组的和
 __global__ void gridsum(float *result, int num_blocks){//result[0] = sum
     for(int stride = num_blocks/2; stride > 0; stride = stride/2){
         if (threadIdx.x < stride) {
@@ -67,12 +74,17 @@ __global__ void gridsum(float *result, int num_blocks){//result[0] = sum
     }
     //printf("sum:%.3e\n",result[0]);非常奇怪，如果打印sum，结果正确，否则结果错误
 }
+
+
+// 执行softmax操作
 __global__ void softmax(float *input, float *result, int size){
     int tid = threadIdx.x + blockIdx.x*blockDim.x;
     if (tid < size){
         input[tid] /= result[0];
     }
 }
+
+// 在CPU上执行softmax操作
 void cpu_softmax(float *cpu_input, int size){
     double st, ela;
     st = get_walltime();
@@ -83,6 +95,7 @@ void cpu_softmax(float *cpu_input, int size){
     
     int mem_size = num_blocks*sizeof(float);
     float *input, *result, *cpu_result;
+
     cudaMalloc((void **) &input, size*sizeof(float));
     cudaMalloc((void **) &result, mem_size);
     cpu_result = (float *)malloc(mem_size);
@@ -115,6 +128,8 @@ void cpu_softmax(float *cpu_input, int size){
     
 }
 
+
+//主函数
 int main() {
     float *cpu_input;
     int size = 16;
@@ -124,6 +139,7 @@ int main() {
         cpu_input[i] = i%100;
         
     }
+    
     cpu_softmax(cpu_input, size);
     
    

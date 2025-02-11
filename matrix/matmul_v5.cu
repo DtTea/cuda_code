@@ -503,6 +503,7 @@ void hostMatrix(float *hostA, float *hostB, float *hostC, int M, int K, int N)
     dim3 block_dim(BLOCK_DIM_x, BLOCK_DIM_y, 1);
     dim3 grid_dim(num_blocks_x, num_blocks_y, 1);
     int repeat = 20;
+
     // matrixKernel1st<BM, BN, BK, TM, TN><<<grid_dim, block_dim>>>(dA, dB, dC, M, K, N); // warm up
     // matrixKernel2nd<BM, BN, BK, TM, TN><<<grid_dim, block_dim>>>(dA, dB, dC, M, K, N);
     // matrixKernel3rd<BM, BN, BK, TM, TN><<<grid_dim, block_dim>>>(dA, dB, dC, M, K, N);
@@ -514,9 +515,13 @@ void hostMatrix(float *hostA, float *hostB, float *hostC, int M, int K, int N)
     cudaEventRecord(start, 0);
     for (int i = 0; i < repeat; i++)
     {
+        // printf("this is in running V5_1!");
         // matrixKernel1st<BM, BN, BK, TM, TN><<<grid_dim, block_dim>>>(dA, dB, dC, M, K, N);
+        // printf("this is in running V5_2!");
         // matrixKernel2nd<BM, BN, BK, TM, TN><<<grid_dim, block_dim>>>(dA, dB, dC, M, K, N);
+        // printf("this is in running V5_3!");
         // matrixKernel3rd<BM, BN, BK, TM, TN><<<grid_dim, block_dim>>>(dA, dB, dC, M, K, N);
+        printf("this is in running V5_4!");
         matrixKernel4th<BM, BN, BK, TM, TN><<<grid_dim, block_dim>>>(dA, dB, dC, M, K, N);
         //    matrixOrigin<BM, BN, BK, TM, TN><<<grid_dim, block_dim>>>(dA, dB, dC, M, K, N);
     }
